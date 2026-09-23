@@ -80,7 +80,7 @@ class Handler(BaseHTTPRequestHandler):
             or not hmac.compare_digest(token.encode("utf-8"), self.server.token.encode("utf-8"))
         ):
             return self.send(403, {"error": "Use the app from its local server URL."})
-        if self.path != "/api/analyze":
+        if self.path not in {"/api/analyze", "/api/inspect"}:
             return self.send(404, {"error": "Not found."})
         if self.headers.get("Content-Type", "").split(";")[0] != "application/json":
             return self.send(415, {"error": "Use application/json."})
@@ -108,6 +108,14 @@ class Handler(BaseHTTPRequestHandler):
                 dataset = demo_dataset()
             else:
                 dataset = parse_csv(payload.get("csv"), payload.get("metadata"))
+            if self.path == "/api/inspect":
+                return self.send(
+                    200,
+                    {
+                        "symbols": sorted(dataset["prices"]),
+                        "metadata": dataset["metadata"],
+                    },
+                )
             result = analyze(dataset, **settings)
             self.send(
                 200,

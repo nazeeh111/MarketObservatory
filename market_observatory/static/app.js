@@ -59,10 +59,10 @@ function table(headers, rows, classForRow = () => "") {
   });
   return result;
 }
-function controls(result) {
+function controls(symbols) {
   const root = $("asset-controls");
   root.replaceChildren();
-  result.settings.symbols.forEach((symbol) => {
+  symbols.forEach((symbol) => {
     const row = element("div", undefined, "asset-control");
     const label = element("label"),
       check = element("input");
@@ -104,20 +104,46 @@ function settings() {
     initial_value: Number($("initial").value),
   };
 }
-async function run(candidate, reset = false) {
+async function loadDataset(candidate) {
+  if (busy) return;
+  error("");
+  setBusy(true);
+  try {
+    const response = await fetch("/api/inspect", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Research-Token": document.querySelector('meta[name="research-token"]').content,
+      },
+      body: JSON.stringify(candidate),
+    });
+    const payload = await response.json();
+    if (!response.ok) throw new Error(payload.error || "Import failed.");
+    dataset = candidate;
+    current = null;
+    controls(payload.symbols);
+    $("results").hidden = true;
+    $("data-badge").textContent = "DATASET LOADED";
+    $("subtitle").textContent = `${payload.metadata.title} · ${payload.symbols.length} assets loaded. Select assets and run a scenario.`;
+  } catch (problem) {
+    error(problem.message);
+    setBusy(false);
+    $("status").textContent = current
+      ? "Import failed. Previous dataset and analysis remain available."
+      : "Import failed. Select a valid CSV or load the demo.";
+    return;
+  }
+  setBusy(false);
+  await run(dataset);
+}
+async function run(candidate) {
   if (busy) return;
   error("");
   setBusy(true);
   try {
     const body = {
       ...candidate,
-      settings: reset
-        ? {
-            mode: $("mode").value,
-            periods_per_year: Number($("periods").value),
-            initial_value: Number($("initial").value),
-          }
-        : settings(),
+      settings: settings(),
     };
     const response = await fetch("/api/analyze", {
       method: "POST",
@@ -133,7 +159,6 @@ async function run(candidate, reset = false) {
     if (!response.ok) throw new Error(payload.error || "Analysis failed.");
     dataset = candidate;
     current = payload;
-    if (reset) controls(payload.result);
     render(payload.result);
     $("status").textContent =
       `Analysis complete · ${payload.result.dates.length} shared observations · ${payload.result.settings.mode === "buy_hold" ? "buy and hold" : "rebalanced each observation"}`;
@@ -141,7 +166,7 @@ async function run(candidate, reset = false) {
     error(problem.message);
     $("status").textContent = current
       ? "Previous successful analysis remains displayed. Changes were not applied."
-      : "No analysis available.";
+      : "Dataset loaded. Adjust the selected assets or settings and run the scenario again.";
   } finally {
     busy = false;
     document
@@ -469,7 +494,7 @@ function render(result) {
     ...result.warnings.map((w) => element("li", w)),
   );
 }
-$("demo").addEventListener("click", () => run({ demo: true }, true));
+$("demo").addEventListener("click", () => loadDataset({ demo: true }));
 $("scenario").addEventListener("submit", (event) => {
   event.preventDefault();
   run(dataset);
@@ -490,7 +515,7 @@ $("import-form").addEventListener("submit", async (event) => {
   try {
     const bytes = await file.arrayBuffer();
     const text = decodeCsvBytes(bytes);
-    await run(
+    await loadDataset(
       {
         csv: text,
         metadata: {
@@ -501,7 +526,6 @@ $("import-form").addEventListener("submit", async (event) => {
           notes: $("notes").value,
         },
       },
-      true,
     );
   } catch (problem) {
     error(`Could not read UTF-8 CSV: ${problem.message}`);
@@ -532,4 +556,4 @@ document.querySelectorAll("[data-export]").forEach((button) =>
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }),
 );
-run({ demo: true }, true);
+loadDataset({ demo: true });

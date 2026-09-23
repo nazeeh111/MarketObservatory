@@ -124,3 +124,23 @@ class ServerTests(unittest.TestCase):
             json.loads(body)["result"]["provenance"]["source_sha256"],
             hashlib.sha256(raw).hexdigest(),
         )
+
+    def test_inspect_then_select_from_disjoint_import(self):
+        from test_engine import CSV, META
+
+        payload = {"csv": CSV + "2024-01-10,C,7\n", "metadata": {**META, "as_of": "2024-01-10"}}
+        headers = {
+            "Content-Type": "application/json",
+            "Origin": f"http://127.0.0.1:{self.port}",
+            "X-Research-Token": self.server.token,
+        }
+        status, body, _ = self.request("POST", "/api/inspect", json.dumps(payload), headers)
+        self.assertEqual(status, 200)
+        self.assertEqual(json.loads(body)["symbols"], ["A", "B", "C"])
+        payload["settings"] = {"symbols": ["A", "B"], "weights": {"A": 3, "B": 1}}
+        status, body, _ = self.request("POST", "/api/analyze", json.dumps(payload), headers)
+        self.assertEqual(status, 200)
+        result = json.loads(body)["result"]
+        self.assertEqual(result["settings"]["weights"], {"A": 0.75, "B": 0.25})
+        self.assertEqual(len(result["dates"]), 3)
+        self.assertEqual(result["provenance"]["observations"], 7)

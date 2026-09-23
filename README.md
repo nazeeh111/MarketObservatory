@@ -30,7 +30,7 @@ Running from source needs no installation or network. Packaging uses setuptools 
 ## One complete research workflow
 
 1. Load the synthetic demo or expand **Import price CSV** and provide your local file and provenance.
-2. Select assets and enter nonnegative relative weights. Weights normalize to 100%; unselected assets are excluded from date alignment.
+2. Select assets and enter nonnegative relative weights. A valid import exposes all asset controls even if the initial selection has fewer than three common dates; deselect incompatible assets and run again. Weights normalize to 100%; unselected assets are excluded from date alignment.
 3. Compare **rebalance each observation** with **buy and hold**, which allows allocations to drift. Set the observation frequency explicitly.
 4. Inspect growth, peak-to-trough drawdown, annualized volatility, correlation, allocation drift, and data coverage. Use arrow keys on the growth chart to inspect dates.
 5. Export a self-contained **HTML report**, complete **JSON** record, or aligned **CSV**. JSON retains every numerical series, settings, source metadata, and data fingerprints. Export reflects the last successful analysis; edited settings must be run first.
@@ -82,7 +82,7 @@ python3 -m market_observatory report --csv prices.csv --metadata source.json \
 }
 ```
 
-Existing output files are refused unless `--force` is supplied. HTML reports are portable and contain no scripts or external assets. CSV exports contain all aligned prices, returns, growth and drawdowns; JSON is the full reproduction record.
+Existing output files are refused unless `--force` is supplied. Reports are fully rendered and written to a temporary file before atomic publication, so a failed render or replacement preserves an existing report. HTML reports are portable and contain no scripts or external assets. CSV exports contain all aligned prices, returns, growth and drawdowns; JSON is the full reproduction record.
 
 ## What the calculations mean
 

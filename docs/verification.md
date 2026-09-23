@@ -29,3 +29,15 @@ The browser automation file chooser permission service could not grant a local u
 The CI matrix is configured for Python 3.11 and 3.14 on Linux and Windows. Those hosted runs have not executed as part of this local record. Real provider feeds, market calendars, security master data, corporate actions, execution, advisory suitability and production hosting are outside this application.
 
 The local HTTP server is a single-user desktop convenience, not an internet-facing deployment target. Concurrent requests are capped at four; uploaded data is processed in memory and never persisted by the server.
+
+
+## Complete-workflow audit (2026-09-23)
+
+- Fixed a valid-import workflow failure: disjoint asset dates previously prevented the asset controls from loading. Dataset inspection now validates the CSV before scenario analysis, so the user can deselect incompatible assets and retry. A successful new import clears the previous result; an invalid import preserves the previous dataset.
+- Fixed destructive report failure behavior: forced writes previously truncated existing output before rendering. A same-directory temporary file is now published atomically after rendering and writing finish. Regressions verify preservation on rendering and replacement failure, and temporary-file cleanup.
+- The updated suite passed **40 Python tests**, the two CSV decoder tests, JavaScript syntax checks and Ruff checks on Python 3.14/macOS. The newly added workflow and preservation regressions failed before their fixes.
+- Rebuilt a wheel from the changed source and installed it without runtime dependencies into a fresh environment. From outside the checkout, four concurrent HTTP scenarios covered both modes and two starting values using unsorted BOM/CRLF data, extreme accepted positive prices, a constant asset, and a disjoint asset. Growth matched an independent rational-arithmetic calculation within `1e-14` relative tolerance. CLI and HTTP records matched exactly for identical settings.
+- Reconstructed a fresh long-format input from each aligned CSV export and reran its recorded settings: all numerical series matched exactly. Aligned-only exports do not reconstruct excluded original observations or the original source fingerprint; retain the original CSV for full provenance.
+- Two competing exclusive report writers produced one complete JSON report and one overwrite refusal.
+- Chrome against the freshly installed server: default analysis completed; deselecting all assets showed an actionable error and retained the previous result; selecting one asset and buy-and-hold recovered; reloading the page restored the default synthetic scenario successfully.
+- Browser file selection/import and completed browser downloads remain unverified because of the previously recorded upload-permission service limitation. The import recovery path was exercised through the local HTTP interface, not a browser file chooser. No permission denial was bypassed.

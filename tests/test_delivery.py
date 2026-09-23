@@ -37,3 +37,30 @@ class DeliveryTests(unittest.TestCase):
             self.assertEqual(json.loads(path.read_text())["schema_version"], 1)
             with self.assertRaises(FileExistsError):
                 write_report(r, path, "json")
+
+    def test_render_failure_preserves_destination(self):
+        result = analyze(parse_csv(CSV, META))
+        result["invalid"] = float("nan")
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "report.json"
+            path.write_bytes(b"previous report")
+            with self.assertRaises(ValueError):
+                write_report(result, path, "json", force=True)
+            self.assertEqual(path.read_bytes(), b"previous report")
+            fresh = Path(tmp) / "new.json"
+            with self.assertRaises(ValueError):
+                write_report(result, fresh, "json")
+            self.assertFalse(fresh.exists())
+
+    def test_failed_replace_preserves_destination_and_cleans_temporary_file(self):
+        from unittest.mock import patch
+
+        result = analyze(parse_csv(CSV, META))
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "report.json"
+            path.write_bytes(b"previous report")
+            with patch("os.replace", side_effect=OSError("simulated filesystem failure")):
+                with self.assertRaises(OSError):
+                    write_report(result, path, "json", force=True)
+            self.assertEqual(path.read_bytes(), b"previous report")
+            self.assertEqual(list(Path(tmp).iterdir()), [path])

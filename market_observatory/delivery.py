@@ -4,6 +4,8 @@ import csv
 import html
 import io
 import json
+import os
+import tempfile
 from importlib.resources import files
 from pathlib import Path
 
@@ -97,5 +99,31 @@ def write_report(result, path, format, force=False):
     }
     if format not in render:
         raise ValueError("Report format must be json, csv, or html.")
-    with Path(path).open("w" if force else "x", encoding="utf-8", newline="") as handle:
-        handle.write(render[format](result))
+    # Finish rendering and writing before publishing the destination. A failed
+    # render/write must never truncate an earlier report, even with --force.
+    content = render[format](result)
+    destination = Path(path)
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            newline="",
+            dir=destination.parent,
+            prefix=f".{destination.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as handle:
+            temporary = Path(handle.name)
+            handle.write(content)
+            handle.flush()
+            os.fsync(handle.fileno())
+        if force:
+            os.replace(temporary, destination)
+        else:
+            # A same-directory hard link publishes atomically and refuses an
+            # existing destination, including a competing writer's report.
+            os.link(temporary, destination)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
