@@ -1,0 +1,7 @@
+{
+  "title": "Four synthetic regimes",
+  "source": "Bundled deterministic synthetic fixture; seed 20260923",
+  "as_of": "2025-02-24",
+  "price_basis": "synthetic",
+  "notes": "Fictional symbols: AURORA growth-like, CIRRUS defensive-like, HARBOR low-variance, TERRA cyclical-like. 300 weekday observations with a designed drawdown interval. No prices describe a real security."
+}

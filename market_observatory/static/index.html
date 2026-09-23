@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="research-token" content="__RESEARCH_TOKEN__" />
+    <title>MarketObservatory · Local research terminal</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script src="/csv-input.js" defer></script>
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip" href="#workspace">Skip to research results</a>
+    <header>
+      <a class="brand" href="/"
+        ><span class="brand-mark" aria-hidden="true">M<span>◦</span></span
+        ><span
+          >Market<span>Observatory</span
+          ><small>LOCAL RESEARCH TERMINAL</small></span
+        ></a
+      >
+      <div class="local-badge">
+        <span aria-hidden="true">●</span> OFFLINE ENGINE <b>v1.0</b>
+      </div>
+    </header>
+    <div class="shell">
+      <aside aria-label="Research controls">
+        <p class="eyebrow">01 / DATASET</p>
+        <h2>Your data. Clear provenance.</h2>
+        <p class="muted">
+          Load a local price snapshot or explore four synthetic market regimes.
+        </p>
+        <button id="demo" class="secondary">Load synthetic demo</button>
+        <details id="import-panel">
+          <summary>Import price CSV</summary>
+          <form id="import-form">
+            <label
+              >Dataset title<input
+                id="title"
+                required
+                maxlength="120"
+                placeholder="Daily adjusted closing prices" /></label
+            ><label
+              >Source<input
+                id="source"
+                required
+                maxlength="300"
+                placeholder="Provider / export / experiment"
+            /></label>
+            <div class="two">
+              <label
+                >Source as of<input id="as-of" type="date" required /></label
+              ><label
+                >Price basis<select id="basis">
+                  <option value="unknown">Unknown</option>
+                  <option value="adjusted">Adjusted</option>
+                  <option value="unadjusted">Unadjusted</option>
+                  <option value="synthetic">Synthetic</option>
+                </select></label
+              >
+            </div>
+            <label
+              >Notes<textarea
+                id="notes"
+                maxlength="2000"
+                rows="2"
+                placeholder="Currency, adjustments, limitations"
+              ></textarea></label
+            ><label class="file-label"
+              >CSV file<input
+                id="file"
+                type="file"
+                accept=".csv,text/csv"
+                required
+            /></label>
+            <p class="hint">
+              Exact header: <code>date,symbol,close</code><br />ISO dates ·
+              positive prices · 8 MiB max<br />Use comparable price units. Never
+              uploaded to a remote service.
+            </p>
+            <button type="submit">Import &amp; analyze</button>
+          </form>
+        </details>
+        <div class="divider"></div>
+        <p class="eyebrow">02 / SCENARIO</p>
+        <form id="scenario">
+          <fieldset>
+            <legend>Assets &amp; relative weights</legend>
+            <div id="asset-controls"></div>
+          </fieldset>
+          <p class="hint">
+            Weights normalize to 100%. Zero-weight assets remain in the
+            comparison.
+          </p>
+          <label
+            >Portfolio model<select id="mode">
+              <option value="rebalance">Rebalance each observation</option>
+              <option value="buy_hold">Buy and hold</option>
+            </select></label
+          >
+          <div class="two">
+            <label
+              >Periods / year<input
+                id="periods"
+                type="number"
+                min="1"
+                max="366"
+                step="any"
+                value="252"
+                required /></label
+            ><label
+              >Starting value<input
+                id="initial"
+                type="number"
+                min="0.000001"
+                max="1000000000000"
+                step="any"
+                value="10000"
+                required
+            /></label>
+          </div>
+          <button type="submit" id="analyze">
+            Run scenario <span aria-hidden="true">↗</span>
+          </button>
+        </form>
+        <p class="hint">
+          No fees, taxes, execution or forecasts. All calculations run on this
+          computer.
+        </p>
+      </aside>
+      <main id="workspace">
+        <div class="workspace-heading">
+          <div>
+            <p class="eyebrow">RESEARCH / HISTORICAL ANALYSIS</p>
+            <h1>Observe the evidence.</h1>
+            <p id="subtitle" class="muted">
+              A reproducible view of returns, risk, and allocation.
+            </p>
+          </div>
+          <span id="data-badge" class="tag">AWAITING DATA</span>
+        </div>
+        <div id="status" role="status" aria-live="polite">
+          Loading local demo…
+        </div>
+        <div id="error" role="alert" hidden></div>
+        <section id="results" hidden>
+          <section class="source-strip" aria-label="Dataset provenance">
+            <div>
+              <span class="eyebrow">SOURCE</span
+              ><strong id="dataset-name"></strong
+              ><span id="dataset-source"></span>
+            </div>
+            <div>
+              <span class="eyebrow">AS OF</span
+              ><strong id="dataset-asof"></strong
+              ><span id="dataset-basis"></span>
+            </div>
+            <div>
+              <span class="eyebrow">ALIGNED WINDOW</span
+              ><strong id="date-window"></strong
+              ><span id="observation-count"></span>
+            </div>
+          </section>
+          <div class="metric-grid" id="metrics"></div>
+          <section class="panel chart-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">COMPARATIVE PERFORMANCE</p>
+                <h2>Growth of 100</h2>
+              </div>
+              <div id="legend" class="legend" aria-label="Series legend"></div>
+            </div>
+            <div id="growth-chart" class="chart"></div>
+            <p class="chart-caption">
+              Normalized at the first common date. Portfolio is shown as the
+              thicker line. Hover or focus the chart to inspect a date.
+            </p>
+            <div id="chart-readout" class="readout" aria-live="polite"></div>
+          </section>
+          <div class="lower-grid">
+            <section class="panel">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">DOWNSIDE</p>
+                  <h2>Portfolio drawdown</h2>
+                </div>
+              </div>
+              <div id="drawdown-chart" class="chart small"></div>
+              <p class="chart-caption">
+                Distance below the previous portfolio peak.
+              </p>
+            </section>
+            <section class="panel">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">CO-MOVEMENT</p>
+                  <h2>Return correlation</h2>
+                </div>
+              </div>
+              <div id="correlation" class="table-scroll"></div>
+              <p class="chart-caption">
+                Sample Pearson correlation. Undefined for a constant series.
+              </p>
+            </section>
+          </div>
+          <section class="panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">MEASUREMENT TABLE</p>
+                <h2>Every result, inspectable.</h2>
+              </div>
+              <span class="muted">Historical · same aligned window</span>
+            </div>
+            <div id="asset-table" class="table-scroll"></div>
+          </section>
+          <div class="lower-grid">
+            <section class="panel">
+              <p class="eyebrow">DATA QUALITY</p>
+              <h2>Alignment &amp; coverage</h2>
+              <div id="coverage" class="table-scroll"></div>
+              <p class="hint">
+                Exact intersection only. Excluded observations are not used in
+                any displayed calculation.
+              </p>
+              <details>
+                <summary>Dataset record &amp; fingerprint</summary>
+                <p id="dataset-notes" class="muted"></p>
+                <pre id="provenance"></pre>
+              </details>
+            </section>
+            <section class="panel">
+              <p class="eyebrow">REPRODUCE &amp; SHARE</p>
+              <h2>Take the evidence with you.</h2>
+              <p class="muted">
+                Export the assumptions and observations behind this scenario.
+                Reports open without the app.
+              </p>
+              <div class="export-buttons">
+                <button data-export="html" class="secondary">
+                  HTML report ↗</button
+                ><button data-export="json" class="secondary">
+                  Full JSON ↓</button
+                ><button data-export="csv" class="secondary">
+                  Aligned CSV ↓
+                </button>
+              </div>
+              <details>
+                <summary>Methods &amp; interpretation</summary>
+                <ul id="warnings"></ul>
+                <p class="hint">
+                  Volatility = sample standard deviation of simple returns ×
+                  √periods/year. CAGR uses 365.25 calendar days/year. Drawdown =
+                  value / running peak − 1. No missing prices are imputed.
+                </p>
+              </details>
+            </section>
+          </div>
+        </section>
+        <footer>
+          <span>MarketObservatory</span
+          ><span>Transparent inputs. Reproducible calculations.</span>
+        </footer>
+      </main>
+    </div>
+  </body>
+</html>

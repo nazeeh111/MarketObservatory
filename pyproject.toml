@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "market-observatory"
+version = "1.0.0"
+description = "Offline price research, portfolio scenarios, and reproducible reports"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{name = "nazeeh111"}]
+dependencies = []
+keywords = ["research", "portfolio", "finance", "offline", "data-analysis"]
+
+[project.scripts]
+market-observatory = "market_observatory.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["market_observatory*"]
+
+[tool.setuptools.package-data]
+market_observatory = ["static/*.html", "static/*.css", "static/*.js", "data/*.csv", "data/*.json"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
