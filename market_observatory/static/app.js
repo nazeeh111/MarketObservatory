@@ -349,8 +349,8 @@ function render(result) {
       : "LOCAL SNAPSHOT";
   $("subtitle").textContent =
     result.metadata.price_basis === "synthetic"
-      ? "Four fictional assets. Real calculations. No live market data."
-      : "Your imported snapshot, analyzed locally with explicit assumptions.";
+      ? "Using the bundled synthetic prices with the selected assets, weights, and scenario."
+      : "Using this local snapshot with the selected assets, weights, and scenario.";
   const metrics = [
     ["Total return", result.portfolio.total_return, "Entire aligned window"],
     [

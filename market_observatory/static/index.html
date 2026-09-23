@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="research-token" content="__RESEARCH_TOKEN__" />
-    <title>MarketObservatory · Local research terminal</title>
+    <title>MarketObservatory · Price analysis</title>
     <link rel="stylesheet" href="/style.css" />
     <script src="/csv-input.js" defer></script>
     <script src="/app.js" defer></script>
@@ -16,17 +16,17 @@
         ><span class="brand-mark" aria-hidden="true">M<span>◦</span></span
         ><span
           >Market<span>Observatory</span
-          ><small>LOCAL RESEARCH TERMINAL</small></span
+          ><small>LOCAL PRICE ANALYSIS</small></span
         ></a
       >
       <div class="local-badge">
-        <span aria-hidden="true">●</span> OFFLINE ENGINE <b>v1.0</b>
+        <span aria-hidden="true">●</span> LOCAL ANALYSIS <b>v1.0</b>
       </div>
     </header>
     <div class="shell">
       <aside aria-label="Research controls">
         <p class="eyebrow">01 / DATASET</p>
-        <h2>Your data. Clear provenance.</h2>
+        <h2>Price data</h2>
         <p class="muted">
           Load a local price snapshot or explore four synthetic market regimes.
         </p>
@@ -124,17 +124,16 @@
           </button>
         </form>
         <p class="hint">
-          No fees, taxes, execution or forecasts. All calculations run on this
-          computer.
+          Results exclude fees and taxes. The app analyzes data; it does not place orders or forecast prices.
         </p>
       </aside>
       <main id="workspace">
         <div class="workspace-heading">
           <div>
-            <p class="eyebrow">RESEARCH / HISTORICAL ANALYSIS</p>
-            <h1>Observe the evidence.</h1>
+            <p class="eyebrow">HISTORICAL ANALYSIS</p>
+            <h1>Historical portfolio analysis</h1>
             <p id="subtitle" class="muted">
-              A reproducible view of returns, risk, and allocation.
+              Compare growth, drawdown, volatility, correlation, and portfolio allocation.
             </p>
           </div>
           <span id="data-badge" class="tag">AWAITING DATA</span>
@@ -207,7 +206,7 @@
             <div class="panel-heading">
               <div>
                 <p class="eyebrow">MEASUREMENT TABLE</p>
-                <h2>Every result, inspectable.</h2>
+                <h2>Asset and portfolio metrics</h2>
               </div>
               <span class="muted">Historical · same aligned window</span>
             </div>
@@ -229,11 +228,10 @@
               </details>
             </section>
             <section class="panel">
-              <p class="eyebrow">REPRODUCE &amp; SHARE</p>
-              <h2>Take the evidence with you.</h2>
+              <p class="eyebrow">EXPORT</p>
+              <h2>Export this analysis</h2>
               <p class="muted">
-                Export the assumptions and observations behind this scenario.
-                Reports open without the app.
+                Download the current assumptions and results as HTML, JSON, or aligned CSV.
               </p>
               <div class="export-buttons">
                 <button data-export="html" class="secondary">
@@ -258,7 +256,7 @@
         </section>
         <footer>
           <span>MarketObservatory</span
-          ><span>Transparent inputs. Reproducible calculations.</span>
+          ><span>CSV imports · historical analysis · HTML, JSON, and CSV exports</span>
         </footer>
       </main>
     </div>

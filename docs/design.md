@@ -1,6 +1,6 @@
 # MarketObservatory design
 
-An original offline research terminal for comparing price series and explicit portfolio assumptions. Python 3.11+ standard library supplies validation, analytics, HTTP service and exports. Bundled HTML/CSS/JavaScript provides a responsive dashboard. No cloud accounts, market feeds, telemetry, trading, or runtime dependencies.
+MarketObservatory imports price series from CSV, applies portfolio weights under selected assumptions, and exports analysis results with their source details. Python 3.11+ standard library supplies validation, analytics, the local HTTP service, and exports. The bundled HTML/CSS/JavaScript dashboard uses local assets and has no telemetry or runtime dependencies.
 
 ## Data contract
 
@@ -14,7 +14,7 @@ Portfolio: nonnegative normalized weights, with explicit constant-weight rebalan
 
 ## Interface and exports
 
-Dark navy research terminal, amber/cyan accents, labeled controls and charts, readable tables, keyboard focus. Source panel always visible. CSV import, asset checklist, weights, periods/year and scenario controls. SVG growth/drawdown charts; correlation matrix; metrics and data coverage tables. Export full JSON with model/provenance/version, aligned period CSV, and self-contained escaped HTML report.
+The dashboard shows dataset provenance beside controls for CSV import, asset selection, weights, annualization periods, and portfolio model. SVG charts display growth and drawdown; tables show returns, correlations, and date coverage. Exports include a self-contained HTML report, aligned CSV, and JSON record with the model settings and source fingerprints.
 
 ## Implementation and verification
 

@@ -1,12 +1,10 @@
 # MarketObservatory
 
-**A local research terminal for price data, portfolio scenarios, and reproducible evidence.**
+**Local analysis for price snapshots and portfolio allocations.**
 
-Import a CSV snapshot, compare assets on the same dates, inspect allocation trade-offs, and export the complete calculation record. Runs entirely on your computer with Python and a browser. No accounts, API keys, market subscriptions, or runtime dependencies.
+Import a CSV snapshot, compare assets over shared dates, test portfolio weights under rebalancing or buy-and-hold, and export the inputs and results. The app runs on your computer with Python and a browser; the analysis engine uses the Python standard library.
 
-**Development history:** Built locally using Git and published as a complete project. Publication dates describe publication, not a reconstructed development timeline.
-
-[View a read-only synthetic report](https://nazeeh111.github.io/MarketObservatory/) · Run the local app below for imports and interactive scenarios.
+[Synthetic example report](https://nazeeh111.github.io/MarketObservatory/) · Run the local app below to import data and compare scenarios.
 
 ## Start in one command
 
@@ -16,7 +14,7 @@ Requires Python **3.11 or later**. From this directory:
 python3 -m market_observatory serve --open
 ```
 
-Open `http://127.0.0.1:8765`. On Windows, use `py -3` instead of `python3` if appropriate. The default view loads **300 observations across four fictional assets**, with an intentional stress interval. Nothing in the demo is a live quote or a real security.
+Open `http://127.0.0.1:8765`. On Windows, use `py -3` instead of `python3` if appropriate. The included example contains **300 synthetic observations for four fictional assets**, including a designed drawdown interval. Its prices do not describe real securities.
 
 Optional installation provides the `market-observatory` command:
 
@@ -27,7 +25,7 @@ market-observatory serve --open
 
 Running from source needs no installation or network. Packaging uses setuptools at build time. Stop the server with Ctrl+C. A different local port can be selected with `--port 8873`.
 
-## One complete research workflow
+## Analyze and export
 
 1. Load the synthetic demo or expand **Import price CSV** and provide your local file and provenance.
 2. Select assets and enter nonnegative relative weights. A valid import exposes all asset controls even if the initial selection has fewer than three common dates; deselect incompatible assets and run again. Weights normalize to 100%; unselected assets are excluded from date alignment.
@@ -95,7 +93,7 @@ Existing output files are refused unless `--force` is supplied. Reports are full
 - **Rebalanced portfolio:** multiply wealth each period by the weighted average gross return, restoring target weights after each observation.
 - **Buy and hold:** initial weights times each asset's growth; end weights show the resulting drift.
 
-Zero-weight assets still participate in comparisons and date alignment. These are historical scenarios, not forecasts or recommendations. There is no trade execution, optimization, leverage, cash yield, fee model, tax model, slippage, or independent corporate-action processing. No claim of equivalence to a commercial market terminal or premium data feed.
+Zero-weight assets still participate in comparisons and date alignment. Results describe historical scenarios; they are not forecasts or recommendations. The app does not model trading, leverage, cash yield, fees, taxes, slippage, or corporate actions independently of the supplied prices.
 
 ## Verification and architecture
 
@@ -107,7 +105,7 @@ node --test tests/browser_csv.test.cjs
 
 Tests cover analytical two-asset examples, normalized weights, buy-and-hold vs rebalancing, alignment, undefined correlation, invalid numbers/dates/schema/settings, provenance hashes, escaped reports, overwrite protection and local HTTP boundaries. Node is only needed for the JavaScript development checks.
 
-`engine.py` owns validation and math, `delivery.py` owns portable reports, `server.py` owns the loopback API, and `static/` owns presentation. The browser and CLI call the same engine. HTTP requests are bounded, accept only the local origin with a per-process request token, and cannot choose filesystem paths. The app has no telemetry, external fonts, CDN dependencies, or network providers.
+`engine.py` owns validation and math, `delivery.py` owns portable reports, `server.py` owns the loopback API, and `static/` owns presentation. The browser and CLI call the same engine. HTTP requests are bounded, accept only the local origin with a per-process request token, and cannot choose filesystem paths. Uploaded files stay in memory and are processed locally. The interface uses bundled assets and has no telemetry.
 
 A portable [synthetic example report](docs/example-report.html) is included. Regenerate the CSV fixture with `python3 scripts/generate_demo.py /path/to/new-demo.csv`; existing destinations are refused.
 
