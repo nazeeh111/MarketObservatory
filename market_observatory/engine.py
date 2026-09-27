@@ -90,7 +90,12 @@ def parse_csv(text, metadata):
                 raise ValidationError(
                     f"Row {line}: symbol must start with A-Z and contain at most 16 uppercase letters, digits, dots, underscores or hyphens."
                 )
-            price = number(row["close"], f"Row {line} close", 1e-9, 1e12)
+            close = row["close"].strip()
+            if not re.fullmatch(
+                r"[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?", close
+            ):
+                raise ValidationError(f"Row {line} close must be an ASCII decimal number.")
+            price = number(close, f"Row {line} close", 1e-9, 1e12)
             values = series.setdefault(symbol, {})
             if len(series) > MAX_SYMBOLS:
                 raise ValidationError("CSV exceeds 16 assets.")

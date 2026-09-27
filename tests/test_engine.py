@@ -55,6 +55,15 @@ class EngineTests(unittest.TestCase):
             with self.subTest(value=value), self.assertRaises(ValidationError):
                 parse_csv(CSV.replace(",A,110", ",A," + value), META)
 
+    def test_reject_non_decimal_csv_price_tokens(self):
+        for value in ["1_10", "١١٠"]:
+            with self.subTest(value=value), self.assertRaises(ValidationError):
+                parse_csv(CSV.replace(",A,110", ",A," + value), META)
+        self.assertEqual(
+            parse_csv(CSV.replace(",A,110", ",A,1.10e2"), META)["prices"]["A"]["2024-01-02"],
+            110.0,
+        )
+
     def test_reject_dates_duplicates_schema(self):
         for value in [
             CSV + "2024-01-01,A,100\n",

@@ -51,7 +51,7 @@ date,symbol,close
 
 - Dates must be real `YYYY-MM-DD` calendar dates; timestamps/timezones are rejected rather than silently truncated.
 - Symbols start with an uppercase letter, followed by uppercase letters, digits, `.`, `_`, or `-`; maximum 16 characters.
-- Prices must be finite and between `1e-9` and `1e12`. Duplicate asset/date rows, missing fields, extra columns, and nonnumeric prices are rejected.
+- Prices must be ASCII decimal numbers (scientific notation is allowed), finite and between `1e-9` and `1e12`. Duplicate asset/date rows, missing fields, extra columns, and nonnumeric prices are rejected.
 - Maximum 8 MiB, 100,000 rows, 16 assets and 20,000 common dates; at least three common dates are required.
 - Supply a title, source, source **as-of date**, and price basis. Observation dates cannot be after the as-of date. The as-of date is supplied by you, not independently verified.
 - Use comparable currency/valuation units and document adjustments in the notes. Splits and dividends are represented only if your supplied prices include them. Importing a file does not confer redistribution rights to its contents.
