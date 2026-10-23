@@ -117,8 +117,6 @@ class EngineTests(unittest.TestCase):
         json.dumps(analyze(parse_csv(CSV, META)), allow_nan=False)
 
 
-if __name__ == "__main__":
-    unittest.main()
 
 
 class AdditionalMathTests(unittest.TestCase):
@@ -199,3 +197,7 @@ class ReviewRegressionTests(unittest.TestCase):
                 ):
                     self.assertTrue(math.isclose(actual, expected, rel_tol=1e-12, abs_tol=0))
                 self.assertAlmostEqual(rebalanced["portfolio"]["total_return"], 0)
+
+
+if __name__ == "__main__":
+    unittest.main()
