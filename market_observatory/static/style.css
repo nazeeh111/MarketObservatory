@@ -554,14 +554,15 @@ code {
 }
 @media (max-width: 760px) {
   header {
-    height: 76px;
+    height: 64px;
     padding: 0 20px;
   }
   .brand {
     font-size: 19px;
   }
-  .local-badge {
-    font-size: 8px;
+  .local-badge,
+  .brand small {
+    display: none;
   }
   .local-badge b {
     display: none;
@@ -586,17 +587,19 @@ code {
   }
   #asset-controls {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4px 18px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px 12px;
   }
   main {
     padding: 25px 17px;
   }
   .workspace-heading {
-    align-items: flex-start;
+    display: block;
   }
   .tag {
-    font-size: 8px;
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 11px;
   }
   .metric-grid {
     grid-template-columns: 1fr 1fr;
@@ -622,7 +625,31 @@ code {
   footer {
     gap: 20px;
   }
-  .chart-caption {
-    font-size: 10px;
+  .hint,
+  .chart-caption,
+  .readout,
+  label,
+  legend,
+  .asset-control label {
+    font-size: 12px;
+  }
+  .asset-control {
+    grid-template-columns: minmax(0, 1fr) 48px;
+    min-height: 44px;
+  }
+  .asset-control label {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .asset-control input[type="checkbox"] {
+    flex-shrink: 0;
+  }
+  summary {
+    min-height: 44px;
+    padding: 10px 0;
+  }
+  .export-buttons button {
+    min-height: 44px;
+    font-size: 12px;
   }
 }
